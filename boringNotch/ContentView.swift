@@ -307,8 +307,11 @@ struct ContentView: View {
                         NotchHomeView(albumArtNamespace: albumArtNamespace)
                     case .calendar:
                         CalendarView()
-                            .onHover { vm.isHoveringCalendar = $0 }
+                            .onHover { vm.isHoveringScrollView = $0 }
                             .frame(maxWidth: .infinity)
+                            .transition(.opacity)
+                    case .ports:
+                        PortsView()
                             .transition(.opacity)
                     }
                 }
@@ -527,7 +530,7 @@ struct ContentView: View {
     }
 
     private func handleUpGesture(translation: CGFloat, phase: NSEvent.Phase) {
-        guard vm.notchState == .open && !vm.isHoveringCalendar else { return }
+        guard vm.notchState == .open && !vm.isHoveringScrollView else { return }
 
         withAnimation(animationSpring) {
             gestureProgress = (translation / Defaults[.gestureSensitivity]) * -20

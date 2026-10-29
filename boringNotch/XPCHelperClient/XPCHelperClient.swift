@@ -241,6 +241,40 @@ final class XPCHelperClient: NSObject {
             return false
         }
     }
+
+    // MARK: - Ports
+
+    nonisolated func scanPorts(includeForeign: Bool) async -> [DevProcess]? {
+        do {
+            let service = await MainActor.run {
+                ensureRemoteService()
+            }
+            let data: Data? = try await service.withContinuation { service, continuation in
+                service.scanPorts(includeForeign: includeForeign) { data in
+                    continuation.resume(returning: data)
+                }
+            }
+            return data.flatMap { try? JSONDecoder().decode([DevProcess].self, from: $0) }
+        } catch {
+            return nil
+        }
+    }
+
+    nonisolated func stopProcesses(_ request: StopRequest, force: Bool) async -> Bool {
+        guard let payload = try? JSONEncoder().encode(request) else { return false }
+        do {
+            let service = await MainActor.run {
+                ensureRemoteService()
+            }
+            return try await service.withContinuation { service, continuation in
+                service.stopProcesses(payload, force: force) { success in
+                    continuation.resume(returning: success)
+                }
+            }
+        } catch {
+            return false
+        }
+    }
 }
 
 extension Notification.Name {

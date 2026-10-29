@@ -20,5 +20,8 @@ import Foundation
     func isScreenBrightnessAvailable(with reply: @escaping (Bool) -> Void)
     func currentScreenBrightness(with reply: @escaping (NSNumber?) -> Void)
     func setScreenBrightness(_ value: Float, with reply: @escaping (Bool) -> Void)
+    // Listening ports (portside), JSON-encoded [DevProcess] and StopRequest
+    func scanPorts(includeForeign: Bool, with reply: @escaping (Data?) -> Void)
+    func stopProcesses(_ payload: Data, force: Bool, with reply: @escaping (Bool) -> Void)
 }
 

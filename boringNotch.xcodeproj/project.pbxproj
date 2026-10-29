@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A0F700000000000000000003 /* PortsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0F700000000000000000002 /* PortsStore.swift */; };
+		A0F700000000000000000005 /* PortsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0F700000000000000000004 /* PortsView.swift */; };
 		111BE95D2ECD71E10079DD4E /* AsyncXPCConnection in Frameworks */ = {isa = PBXBuildFile; productRef = 111BE95C2ECD71E10079DD4E /* AsyncXPCConnection */; };
 		111BEA512ECFBF7F0079DD4E /* MacroVisionKit in Frameworks */ = {isa = PBXBuildFile; productRef = 111BEA502ECFBF7F0079DD4E /* MacroVisionKit */; };
 		111BEA5F2ED07A340079DD4E /* MacroVisionKit in Frameworks */ = {isa = PBXBuildFile; productRef = 111BEA5E2ED07A340079DD4E /* MacroVisionKit */; };
@@ -154,6 +156,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		A0F700000000000000000002 /* PortsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PortsStore.swift; sourceTree = "<group>"; };
+		A0F700000000000000000004 /* PortsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PortsView.swift; sourceTree = "<group>"; };
 		111BEA602ED09B1B0079DD4E /* NSScreen+UUID.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSScreen+UUID.swift"; sourceTree = "<group>"; };
 		112B0EB32E30DD0F00562D6C /* mediaremote-adapter.pl */ = {isa = PBXFileReference; lastKnownFileType = text.script.perl; path = "mediaremote-adapter.pl"; sourceTree = "<group>"; };
 		112B0EB52E30DD0F00562D6C /* MediaRemoteAdapterTestClient */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = MediaRemoteAdapterTestClient; sourceTree = "<group>"; };
@@ -265,11 +269,18 @@
 			);
 			target = 11F7484E2EC9AABA00F841DB /* BoringNotchXPCHelper */;
 		};
+		A0F700000000000000000006 /* Exceptions for "BoringNotchXPCHelper" folder in "boringNotch" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Ports/Model.swift,
+			);
+			target = 14CEF4112C5CAED300855D72 /* boringNotch */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		112FB72F2CCF12CC0015238C /* private */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = private; sourceTree = "<group>"; };
-		11F748502EC9AABA00F841DB /* BoringNotchXPCHelper */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (11F7485C2EC9AABA00F841DB /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = BoringNotchXPCHelper; sourceTree = "<group>"; };
+		11F748502EC9AABA00F841DB /* BoringNotchXPCHelper */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (11F7485C2EC9AABA00F841DB /* PBXFileSystemSynchronizedBuildFileExceptionSet */, A0F700000000000000000006 /* Exceptions for "BoringNotchXPCHelper" folder in "boringNotch" target */, ); explicitFileTypes = {}; explicitFolders = (); path = BoringNotchXPCHelper; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -387,6 +398,7 @@
 			children = (
 				B141C23B2CA5F50900AC8CC8 /* Onboarding */,
 				14C08BB72C8DE49E000F8AA0 /* Calendar */,
+				A0F700000000000000000001 /* Ports */,
 				149E0B982C737D26006418B1 /* Webcam */,
 				B18654312C6F45AE000B926A /* Live activities */,
 				B18654302C6F4590000B926A /* Settings */,
@@ -423,6 +435,15 @@
 				149E0B992C737D40006418B1 /* WebcamView.swift */,
 			);
 			path = Webcam;
+			sourceTree = "<group>";
+		};
+		A0F700000000000000000001 /* Ports */ = {
+			isa = PBXGroup;
+			children = (
+				A0F700000000000000000002 /* PortsStore.swift */,
+				A0F700000000000000000004 /* PortsView.swift */,
+			);
+			path = Ports;
 			sourceTree = "<group>";
 		};
 		14C08BB72C8DE49E000F8AA0 /* Calendar */ = {
@@ -777,6 +798,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				115C12EC2ED3D003009754CA /* OpenNotchHUD.swift in Sources */,
+				A0F700000000000000000003 /* PortsStore.swift in Sources */,
+				A0F700000000000000000005 /* PortsView.swift in Sources */,
 				14C08BB92C8DE4B1000F8AA0 /* BoringCalendar.swift in Sources */,
 				5955950D2E900ED800C66711 /* ApplicationRelauncher.swift in Sources */,
 				147163982C5D35B70068B555 /* MusicVisualizer.swift in Sources */,

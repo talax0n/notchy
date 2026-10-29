@@ -27,6 +27,7 @@ public enum NotchState {
 public enum NotchViews {
     case home
     case calendar
+    case ports
 }
 
 enum MirrorShapeEnum: String, Defaults.Serializable {

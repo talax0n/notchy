@@ -175,6 +175,31 @@ class BoringNotchXPCHelper: NSObject, BoringNotchXPCHelperProtocol {
         return nil
     }
 
+    // MARK: - Ports
+
+    /// One per connection: NSXPCConnection delivers a connection's messages serially,
+    /// which keeps scans from overlapping as Scanner requires.
+    private let scanner = Scanner()
+
+    @objc func scanPorts(includeForeign: Bool, with reply: @escaping (Data?) -> Void) {
+        reply(try? JSONEncoder().encode(scanner.scan(includeForeign: includeForeign)))
+    }
+
+    @objc func stopProcesses(_ payload: Data, force: Bool, with reply: @escaping (Bool) -> Void) {
+        guard let request = try? JSONDecoder().decode(StopRequest.self, from: payload) else {
+            reply(false)
+            return
+        }
+        Task {
+            await withTaskGroup(of: Void.self) { group in
+                for p in request.processes {
+                    group.addTask { await Terminator.stop(p, force: force, asOf: request.asOf) }
+                }
+            }
+            reply(true)
+        }
+    }
+
     // MARK: - Helper handle for private framework
     private enum DisplayServicesHandle {
         static let handle: UnsafeMutableRawPointer? = {
