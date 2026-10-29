@@ -45,18 +45,12 @@ struct SettingsView: View {
                 NavigationLink(value: "Battery") {
                     Label("Battery", systemImage: "battery.100.bolt")
                 }
-//                NavigationLink(value: "Downloads") {
-//                    Label("Downloads", systemImage: "square.and.arrow.down")
-//                }
                 NavigationLink(value: "Shelf") {
                     Label("Shelf", systemImage: "books.vertical")
                 }
                 NavigationLink(value: "Shortcuts") {
                     Label("Shortcuts", systemImage: "keyboard")
                 }
-                // NavigationLink(value: "Extensions") {
-                //     Label("Extensions", systemImage: "puzzlepiece.extension")
-                // }
                 NavigationLink(value: "Advanced") {
                     Label("Advanced", systemImage: "gearshape.2")
                 }
@@ -87,8 +81,6 @@ struct SettingsView: View {
                     Shelf()
                 case "Shortcuts":
                     Shortcuts()
-                case "Extensions":
-                    GeneralSettings()
                 case "Advanced":
                     Advanced()
                 case "About":
@@ -381,86 +373,6 @@ struct Charge: View {
         .navigationTitle("Battery")
     }
 }
-
-//struct Downloads: View {
-//    @Default(.selectedDownloadIndicatorStyle) var selectedDownloadIndicatorStyle
-//    @Default(.selectedDownloadIconStyle) var selectedDownloadIconStyle
-//    var body: some View {
-//        Form {
-//            warningBadge("We don't support downloads yet", "It will be supported later on.")
-//            Section {
-//                Defaults.Toggle(key: .enableDownloadListener) {
-//                    Text("Show download progress")
-//                }
-//                    .disabled(true)
-//                Defaults.Toggle(key: .enableSafariDownloads) {
-//                    Text("Enable Safari Downloads")
-//                }
-//                    .disabled(!Defaults[.enableDownloadListener])
-//                Picker("Download indicator style", selection: $selectedDownloadIndicatorStyle) {
-//                    Text("Progress bar")
-//                        .tag(DownloadIndicatorStyle.progress)
-//                    Text("Percentage")
-//                        .tag(DownloadIndicatorStyle.percentage)
-//                }
-//                Picker("Download icon style", selection: $selectedDownloadIconStyle) {
-//                    Text("Only app icon")
-//                        .tag(DownloadIconStyle.onlyAppIcon)
-//                    Text("Only download icon")
-//                        .tag(DownloadIconStyle.onlyIcon)
-//                    Text("Both")
-//                        .tag(DownloadIconStyle.iconAndAppIcon)
-//                }
-//
-//            } header: {
-//                HStack {
-//                    Text("Download indicators")
-//                    comingSoonTag()
-//                }
-//            }
-//            Section {
-//                List {
-//                    ForEach([].indices, id: \.self) { index in
-//                        Text("\(index)")
-//                    }
-//                }
-//                .frame(minHeight: 96)
-//                .overlay {
-//                    if true {
-//                        Text("No excluded apps")
-//                            .foregroundStyle(Color(.secondaryLabelColor))
-//                    }
-//                }
-//                .actionBar(padding: 0) {
-//                    Group {
-//                        Button {
-//                        } label: {
-//                            Image(systemName: "plus")
-//                                .frame(width: 25, height: 16, alignment: .center)
-//                                .contentShape(Rectangle())
-//                                .foregroundStyle(.secondary)
-//                        }
-//
-//                        Divider()
-//                        Button {
-//                        } label: {
-//                            Image(systemName: "minus")
-//                                .frame(width: 20, height: 16, alignment: .center)
-//                                .contentShape(Rectangle())
-//                                .foregroundStyle(.secondary)
-//                        }
-//                    }
-//                }
-//            } header: {
-//                HStack(spacing: 4) {
-//                    Text("Exclude apps")
-//                    comingSoonTag()
-//                }
-//            }
-//        }
-//        .navigationTitle("Downloads")
-//    }
-//}
 
 struct HUD: View {
     @EnvironmentObject var vm: BoringViewModel
@@ -1017,145 +929,6 @@ struct Shelf: View {
         .navigationTitle("Shelf")
     }
 }
-
-//struct Extensions: View {
-//    @State private var effectTrigger: Bool = false
-//    var body: some View {
-//        Form {
-//            Section {
-//                List {
-//                    ForEach(extensionManager.installedExtensions.indices, id: \.self) { index in
-//                        let item = extensionManager.installedExtensions[index]
-//                        HStack {
-//                            AppIcon(for: item.bundleIdentifier)
-//                                .resizable()
-//                                .frame(width: 24, height: 24)
-//                            Text(item.name)
-//                            ListItemPopover {
-//                                Text("Description")
-//                            }
-//                            Spacer(minLength: 0)
-//                            HStack(spacing: 6) {
-//                                Circle()
-//                                    .frame(width: 6, height: 6)
-//                                    .foregroundColor(
-//                                        isExtensionRunning(item.bundleIdentifier)
-//                                            ? .green : item.status == .disabled ? .gray : .red
-//                                    )
-//                                    .conditionalModifier(isExtensionRunning(item.bundleIdentifier))
-//                                { view in
-//                                    view
-//                                        .shadow(color: .green, radius: 3)
-//                                }
-//                                Text(
-//                                    isExtensionRunning(item.bundleIdentifier)
-//                                        ? "Running"
-//                                        : item.status == .disabled ? "Disabled" : "Stopped"
-//                                )
-//                                .contentTransition(.numericText())
-//                                .foregroundStyle(.secondary)
-//                                .font(.footnote)
-//                            }
-//                            .frame(width: 60, alignment: .leading)
-//
-//                            Menu(
-//                                content: {
-//                                    Button("Restart") {
-//                                        let ws = NSWorkspace.shared
-//
-//                                        if let ext = ws.runningApplications.first(where: {
-//                                            $0.bundleIdentifier == item.bundleIdentifier
-//                                        }) {
-//                                            ext.terminate()
-//                                        }
-//
-//                                        if let appURL = ws.urlForApplication(
-//                                            withBundleIdentifier: item.bundleIdentifier)
-//                                        {
-//                                            ws.openApplication(
-//                                                at: appURL, configuration: .init(),
-//                                                completionHandler: nil)
-//                                        }
-//                                    }
-//                                    .keyboardShortcut("R", modifiers: .command)
-//                                    Button("Disable") {
-//                                        if let ext = NSWorkspace.shared.runningApplications.first(
-//                                            where: { $0.bundleIdentifier == item.bundleIdentifier })
-//                                        {
-//                                            ext.terminate()
-//                                        }
-//                                        extensionManager.installedExtensions[index].status =
-//                                            .disabled
-//                                    }
-//                                    .keyboardShortcut("D", modifiers: .command)
-//                                    Divider()
-//                                    Button("Uninstall", role: .destructive) {
-//                                        //
-//                                    }
-//                                },
-//                                label: {
-//                                    Image(systemName: "ellipsis.circle")
-//                                        .foregroundStyle(.secondary)
-//                                }
-//                            )
-//                            .controlSize(.regular)
-//                        }
-//                        .buttonStyle(PlainButtonStyle())
-//                        .padding(.vertical, 5)
-//                    }
-//                }
-//                .frame(minHeight: 120)
-//                .actionBar {
-//                    Button {
-//                    } label: {
-//                        HStack(spacing: 3) {
-//                            Image(systemName: "plus")
-//                            Text("Add manually")
-//                        }
-//                        .foregroundStyle(.secondary)
-//                    }
-//                    .disabled(true)
-//                    Spacer()
-//                    Button {
-//                        withAnimation(.linear(duration: 1)) {
-//                            effectTrigger.toggle()
-//                        } completion: {
-//                            effectTrigger.toggle()
-//                        }
-//                        extensionManager.checkIfExtensionsAreInstalled()
-//                    } label: {
-//                        HStack(spacing: 3) {
-//                            Image(systemName: "arrow.triangle.2.circlepath")
-//                                .rotationEffect(effectTrigger ? .degrees(360) : .zero)
-//                        }
-//                        .foregroundStyle(.secondary)
-//                    }
-//                }
-//                .controlSize(.small)
-//                .buttonStyle(PlainButtonStyle())
-//                .overlay {
-//                    if extensionManager.installedExtensions.isEmpty {
-//                        Text("No extension installed")
-//                            .foregroundStyle(Color(.secondaryLabelColor))
-//                            .padding(.bottom, 22)
-//                    }
-//                }
-//            } header: {
-//                HStack(spacing: 0) {
-//                    Text("Installed extensions")
-//                    if !extensionManager.installedExtensions.isEmpty {
-//                        Text(" – \(extensionManager.installedExtensions.count)")
-//                            .foregroundStyle(.secondary)
-//                    }
-//                }
-//            }
-//        }
-//        .accentColor(.effectiveAccent)
-//        .navigationTitle("Extensions")
-//        // TipsView()
-//        // .padding(.horizontal, 19)
-//    }
-//}
 
 struct Appearance: View {
     @ObservedObject var coordinator = BoringViewCoordinator.shared
