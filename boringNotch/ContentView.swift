@@ -305,6 +305,11 @@ struct ContentView: View {
                     switch coordinator.currentView {
                     case .home:
                         NotchHomeView(albumArtNamespace: albumArtNamespace)
+                    case .calendar:
+                        CalendarView()
+                            .onHover { vm.isHoveringCalendar = $0 }
+                            .frame(maxWidth: .infinity)
+                            .transition(.opacity)
                     }
                 }
                 .transition(
