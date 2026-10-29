@@ -26,7 +26,6 @@ public enum NotchState {
 
 public enum NotchViews {
     case home
-    case shelf
 }
 
 enum MirrorShapeEnum: String, Defaults.Serializable {
