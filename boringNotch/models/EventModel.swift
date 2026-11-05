@@ -83,6 +83,9 @@ extension EventModel {
     var isMeeting: Bool { !participants.isEmpty }
 
     func calendarAppURL() -> URL? {
+        if calendar.id.hasPrefix("schedule:") {
+            return url
+        }
 
         guard let id = id.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) else {
             return nil

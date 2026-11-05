@@ -1,0 +1,29 @@
+{
+  "sources": [
+    {
+      "id": "teaching",
+      "name": "Teaching",
+      "enabled": false,
+      "url": "https://replace-with-teaching-portal.example/schedule",
+      "selectors": {
+        "ready": "REPLACE_WITH_AUTHENTICATED_SCHEDULE_MARKER",
+        "rows": "REPLACE_WITH_EVENT_ROW",
+        "empty": "REPLACE_WITH_EXPLICIT_EMPTY_SCHEDULE_MARKER",
+        "fields": {
+          "id": { "selector": ":scope", "attribute": "data-id" },
+          "title": { "selector": "REPLACE_WITH_TITLE" },
+          "start": { "selector": "REPLACE_WITH_START", "attribute": "datetime" },
+          "end": { "selector": "REPLACE_WITH_END", "attribute": "datetime" },
+          "location": { "selector": "REPLACE_WITH_LOCATION" }
+        }
+      }
+    },
+    {
+      "id": "college",
+      "name": "College",
+      "enabled": false,
+      "url": "https://replace-with-college-portal.example/schedule",
+      "adapter": "./college.mjs"
+    }
+  ]
+}

@@ -23,6 +23,10 @@ class CalendarManager: ObservableObject {
     @Published var selectedCalendarIDs: Set<String> = []
     @Published var calendarAuthorizationStatus: EKAuthorizationStatus = .notDetermined
     @Published var reminderAuthorizationStatus: EKAuthorizationStatus = .notDetermined
+    @Published private(set) var browserScheduleSources: [BrowserScheduleSource] = []
+    @Published private(set) var browserScheduleError: String?
+    private var eventsRefreshID = UUID()
+    private var nativeCalendars: [CalendarModel] = []
     private var selectedCalendars: [CalendarModel] = []
     private let calendarService = CalendarService()
 
@@ -57,10 +61,8 @@ class CalendarManager: ObservableObject {
     @MainActor
     func reloadCalendarAndReminderLists() async {
         let all = await calendarService.calendars()
-        self.eventCalendars = all.filter { !$0.isReminder }
-        self.reminderLists = all.filter { $0.isReminder }
-        self.allCalendars = all // for legacy compatibility, can be removed if not needed
-        updateSelectedCalendars()
+        nativeCalendars = all
+        await updateEvents()
     }
 
     func checkCalendarAuthorization() async {
@@ -79,20 +81,12 @@ class CalendarManager: ObservableObject {
             self.calendarAuthorizationStatus = granted ? .fullAccess : .denied
             if granted {
                 await reloadCalendarAndReminderLists()
-                events = await calendarService.events(
-                    from: currentWeekStartDate,
-                    to: Calendar.current.date(byAdding: .day, value: 1, to: currentWeekStartDate)!,
-                    calendars: selectedCalendars.map { $0.id })
             }
         case .restricted, .denied:
             NSLog("Calendar access denied or restricted")
         case .fullAccess:
             NSLog("Full access")
             await reloadCalendarAndReminderLists()
-            events = await calendarService.events(
-                from: currentWeekStartDate,
-                to: Calendar.current.date(byAdding: .day, value: 1, to: currentWeekStartDate)!,
-                calendars: selectedCalendars.map { $0.id })
         case .writeOnly:
             NSLog("Write only")
         @unknown default:
@@ -183,22 +177,50 @@ class CalendarManager: ObservableObject {
         await updateEvents()
     }
 
-    private func updateEvents() async {
-        let calendarIDs = selectedCalendars.map { $0.id }
-        let eventsResult = await calendarService.events(
-            from: currentWeekStartDate,
-            to: Calendar.current.date(byAdding: .day, value: 1, to: currentWeekStartDate)!,
-            calendars: calendarIDs
-        )
-        self.events = eventsResult
+    func refreshSchedules() async {
+        await updateEvents()
     }
-    
+
+    private func refreshBrowserSchedules() {
+        let file = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
+            .appendingPathComponent("Notchy/schedules.json")
+        do {
+            if FileManager.default.fileExists(atPath: file.path) {
+                let data = try Data(contentsOf: file)
+                let snapshot = try JSONDecoder().decode(BrowserScheduleSnapshot.self, from: data)
+                try snapshot.validate()
+                browserScheduleSources = snapshot.sources
+            } else {
+                browserScheduleSources = []
+            }
+            browserScheduleError = nil
+        } catch {
+            browserScheduleError = "Cannot read schedule cache. Keeping the last loaded schedules."
+        }
+        allCalendars = nativeCalendars + browserScheduleSources.map(\.calendar)
+        eventCalendars = allCalendars.filter { !$0.isReminder }
+        reminderLists = nativeCalendars.filter(\.isReminder)
+        updateSelectedCalendars()
+    }
+
+    private func updateEvents() async {
+        let refreshID = UUID()
+        eventsRefreshID = refreshID
+        refreshBrowserSchedules()
+        let day = currentWeekStartDate
+        let dayEnd = Calendar.current.date(byAdding: .day, value: 1, to: day)!
+        let nativeIDs = selectedCalendars.filter { !$0.id.hasPrefix("schedule:") }.map(\.id)
+        let nativeEvents = nativeIDs.isEmpty ? [] : await calendarService.events(
+            from: day, to: dayEnd, calendars: nativeIDs)
+        guard refreshID == eventsRefreshID else { return }
+        let browserEvents = browserScheduleSources
+            .filter { selectedCalendarIDs.contains($0.calendar.id) }
+            .flatMap { $0.eventModels(from: day, to: dayEnd) }
+        events = (nativeEvents + browserEvents).sorted { $0.start < $1.start }
+    }
+
     func setReminderCompleted(reminderID: String, completed: Bool) async {
         await calendarService.setReminderCompleted(reminderID: reminderID, completed: completed)
-        // Refresh events after updating
-        events = await calendarService.events(
-            from: currentWeekStartDate,
-            to: Calendar.current.date(byAdding: .day, value: 1, to: currentWeekStartDate)!,
-            calendars: selectedCalendars.map { $0.id })
+        await updateEvents()
     }
 }

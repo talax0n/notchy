@@ -635,7 +635,7 @@ struct CalendarSettings: View {
                     }
                 } else {
                     List {
-                        ForEach(calendarManager.eventCalendars, id: \.id) { calendar in
+                        ForEach(calendarManager.eventCalendars.filter { !$0.id.hasPrefix("schedule:") }, id: \.id) { calendar in
                             Toggle(
                                 isOn: Binding(
                                     get: { calendarManager.getCalendarSelected(calendar) },
@@ -652,6 +652,41 @@ struct CalendarSettings: View {
                             .accentColor(lighterColor(from: calendar.color))
                         }
                     }
+                }
+            }
+            Section(header: Text("Browser schedules")) {
+                if calendarManager.browserScheduleSources.isEmpty {
+                    Text("Connect your teaching and college portals with tools/schedule-sync. Synced schedules appear here without Calendar access.")
+                        .foregroundStyle(.secondary)
+                }
+                if let error = calendarManager.browserScheduleError {
+                    Text(error).foregroundStyle(.orange)
+                }
+                ForEach(calendarManager.browserScheduleSources) { source in
+                    Toggle(isOn: Binding(
+                        get: { calendarManager.getCalendarSelected(source.calendar) },
+                        set: { selected in
+                            Task {
+                                await calendarManager.setCalendarSelected(source.calendar, isSelected: selected)
+                            }
+                        }
+                    )) {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(source.name)
+                            if let error = source.error {
+                                Text(error).foregroundStyle(.orange)
+                            }
+                            if let date = source.lastSync {
+                                Text("Last synced \(date.formatted(date: .abbreviated, time: .shortened))")
+                                    .foregroundStyle(.secondary)
+                            } else {
+                                Text("Waiting for the first successful sync").foregroundStyle(.secondary)
+                            }
+                        }
+                    }
+                }
+                Button("Reload schedules") {
+                    Task { await calendarManager.refreshSchedules() }
                 }
             }
             Section(header: Text("Reminders")) {

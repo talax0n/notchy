@@ -1,0 +1,8 @@
+{
+  "name": "notchy-schedule-sync",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22" },
+  "scripts": { "test": "node --test", "sync": "node cli.mjs sync" },
+  "dependencies": { "playwright": "1.64.1" }
+}

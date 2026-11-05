@@ -117,7 +117,7 @@ struct ContentView: View {
                     )
                 
                 mainLayout
-                    .frame(height: vm.notchState == .open ? vm.notchSize.height : nil)
+                    .frame(height: vm.notchState == .open ? vm.notchSize.height : nil, alignment: .top)
                     .conditionalModifier(true) { view in
                         let openAnimation = Animation.spring(response: 0.42, dampingFraction: 0.8, blendDuration: 0)
                         let closeAnimation = Animation.spring(response: 0.45, dampingFraction: 1.0, blendDuration: 0)
@@ -197,6 +197,11 @@ struct ContentView: View {
         )
         .animation(.smooth, value: gestureProgress)
         .preferredColorScheme(.dark)
+        .onChange(of: coordinator.currentView) {
+            withAnimation(.smooth(duration: 0.25)) {
+                vm.resizeForCurrentView()
+            }
+        }
         .environmentObject(vm)
     }
 
@@ -530,7 +535,8 @@ struct ContentView: View {
     }
 
     private func handleUpGesture(translation: CGFloat, phase: NSEvent.Phase) {
-        guard vm.notchState == .open && !vm.isHoveringScrollView else { return }
+        guard vm.notchState == .open, coordinator.currentView != .calendar,
+              !vm.isHoveringScrollView else { return }
 
         withAnimation(animationSpring) {
             gestureProgress = (translation / Defaults[.gestureSensitivity]) * -20

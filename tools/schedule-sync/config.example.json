@@ -1,0 +1,18 @@
+{
+  "sources": [
+    {
+      "id": "teaching",
+      "name": "Teaching \u00b7 Messier",
+      "enabled": false,
+      "url": "https://socs1.binus.ac.id/messier/",
+      "adapter": "./adapters/messier.mjs"
+    },
+    {
+      "id": "college",
+      "name": "BINUS College",
+      "enabled": false,
+      "url": "https://lms.binus.ac.id/lms/schedule",
+      "adapter": "./adapters/binus-lms.mjs"
+    }
+  ]
+}

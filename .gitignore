@@ -53,3 +53,7 @@ build/
 *.xcarchive
 *.dSYM
 
+# Schedule browser tooling and private local config
+node_modules/
+tools/schedule-sync/config.json
+tools/schedule-sync/.auth/
