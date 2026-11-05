@@ -90,7 +90,8 @@ class CalendarService: CalendarServiceProviding {
                 
                 let filteredReminders = (reminders ?? []).filter { reminder in
                     // Check if reminder has a due date within our range
-                    guard let dueDate = reminder.dueDateComponents?.date else {
+                    guard let components = reminder.dueDateComponents,
+                          let dueDate = Calendar.current.date(from: components) else {
                         return false
                     }
                     

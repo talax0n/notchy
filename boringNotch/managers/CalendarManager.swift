@@ -219,6 +219,17 @@ class CalendarManager: ObservableObject {
         events = (nativeEvents + browserEvents).sorted { $0.start < $1.start }
     }
 
+    func notificationEvents(from start: Date, to end: Date) async -> [EventModel] {
+        nativeCalendars = await calendarService.calendars()
+        refreshBrowserSchedules()
+        let ids = selectedCalendars.filter { !$0.id.hasPrefix("schedule:") }.map(\.id)
+        let native = ids.isEmpty ? [] : await calendarService.events(from: start, to: end, calendars: ids)
+        let browser = browserScheduleSources
+            .filter { selectedCalendarIDs.contains($0.calendar.id) }
+            .flatMap { $0.eventModels(from: start, to: end) }
+        return (native + browser).filter { selectedCalendarIDs.contains($0.calendar.id) }
+    }
+
     func setReminderCompleted(reminderID: String, completed: Bool) async {
         await calendarService.setReminderCompleted(reminderID: reminderID, completed: completed)
         await updateEvents()

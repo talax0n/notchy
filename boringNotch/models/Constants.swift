@@ -163,6 +163,11 @@ extension Defaults.Keys {
     static let hideAllDayEvents = Key<Bool>("hideAllDayEvents", default: false)
     static let showFullEventTitles = Key<Bool>("showFullEventTitles", default: false)
     static let autoScrollToNextEvent = Key<Bool>("autoScrollToNextEvent", default: true)
+    static let calendarBubbleNotifications = Key<Bool>("calendarBubbleNotifications", default: true)
+    static let reminderBubbleNotifications = Key<Bool>("reminderBubbleNotifications", default: true)
+    static let calendarBubbleLeadMinutes = Key<Int>("calendarBubbleLeadMinutes", default: 10)
+    static let reminderBubbleLeadMinutes = Key<Int>("reminderBubbleLeadMinutes", default: 0)
+
     
     // MARK: Fullscreen Media Detection
     static let hideNotchOption = Key<HideNotchOption>("hideNotchOption", default: .nowPlayingOnly)

@@ -18,6 +18,7 @@ struct ContentView: View {
     @EnvironmentObject var vm: BoringViewModel
     @ObservedObject var webcamManager = WebcamManager.shared
 
+    @ObservedObject var scheduleNotifications = ScheduleNotificationManager.shared
     @ObservedObject var coordinator = BoringViewCoordinator.shared
     @ObservedObject var musicManager = MusicManager.shared
     @ObservedObject var batteryModel = BatteryStatusViewModel.shared
@@ -189,6 +190,24 @@ struct ContentView: View {
         }
         .padding(.bottom, 8)
         .frame(maxWidth: windowSize.width, maxHeight: windowSize.height, alignment: .top)
+        .overlay(alignment: .top) {
+            if let notice = scheduleNotifications.activeNotice {
+                VStack(spacing: 0) {
+                    if vm.notchState == .closed {
+                        Rectangle().fill(.black)
+                            .frame(width: vm.closedNotchSize.width, height: max(32, vm.effectiveClosedNotchHeight) + 4)
+                    } else {
+                        Color.clear.frame(height: max(24, vm.effectiveClosedNotchHeight) + 6)
+                    }
+                    ScheduleNoticeBubble(notice: notice,
+                        open: { scheduleNotifications.openActiveNotice() },
+                        dismiss: { scheduleNotifications.dismiss() })
+                        .frame(width: 580)
+                }
+                .transition(.scale(scale: 0.7, anchor: .top).combined(with: .opacity))
+                .zIndex(10)
+            }
+        }
         .compositingGroup()
         .scaleEffect(
             x: gestureScale,
@@ -455,6 +474,7 @@ struct ContentView: View {
     }
 
     private func doOpen() {
+        guard scheduleNotifications.activeNotice == nil else { return }
         withAnimation(animationSpring) {
             vm.open()
         }
@@ -463,7 +483,7 @@ struct ContentView: View {
     // MARK: - Hover Management
 
     private func handleHover(_ hovering: Bool) {
-        if coordinator.firstLaunch { return }
+        if coordinator.firstLaunch || scheduleNotifications.activeNotice != nil { return }
         hoverTask?.cancel()
         
         if hovering {

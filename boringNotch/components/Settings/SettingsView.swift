@@ -604,6 +604,8 @@ struct CalendarSettings: View {
     @Default(.hideCompletedReminders) var hideCompletedReminders
     @Default(.hideAllDayEvents) var hideAllDayEvents
     @Default(.autoScrollToNextEvent) var autoScrollToNextEvent
+    @Default(.calendarBubbleLeadMinutes) var calendarBubbleLeadMinutes
+    @Default(.reminderBubbleLeadMinutes) var reminderBubbleLeadMinutes
 
     var body: some View {
         Form {
@@ -618,6 +620,33 @@ struct CalendarSettings: View {
             }
             Defaults.Toggle(key: .showFullEventTitles) {
                 Text("Always show full event titles")
+            }
+            Section(header: Text("Notch notifications")) {
+                Defaults.Toggle("Calendar bubbles", key: .calendarBubbleNotifications)
+                Picker("Calendar alert", selection: $calendarBubbleLeadMinutes) {
+                    Text("At start time").tag(0)
+                    Text("5 minutes before").tag(5)
+                    Text("10 minutes before").tag(10)
+                    Text("15 minutes before").tag(15)
+                    Text("30 minutes before").tag(30)
+                }
+                Defaults.Toggle("Reminder bubbles", key: .reminderBubbleNotifications)
+                Picker("Reminder alert", selection: $reminderBubbleLeadMinutes) {
+                    Text("When due").tag(0)
+                    Text("5 minutes before").tag(5)
+                    Text("10 minutes before").tag(10)
+                    Text("15 minutes before").tag(15)
+                }
+                HStack {
+                    Button("Preview calendar bubble") {
+                        ScheduleNotificationManager.shared.preview(.calendar)
+                    }
+                    Button("Preview reminder bubble") {
+                        ScheduleNotificationManager.shared.preview(.reminder)
+                    }
+                }
+                Text("Bubbles appear while Notchy is running and dismiss after 10 seconds. All-day events and date-only reminders are excluded.")
+                    .font(.caption).foregroundStyle(.secondary)
             }
             Section(header: Text("Calendars")) {
                 if calendarManager.calendarAuthorizationStatus != .fullAccess {
